@@ -1,6 +1,6 @@
 {
   "name": "divine-terraform",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A modern god game where you shape worlds and guide civilizations",
   "type": "module",
   "scripts": {
@@ -60,6 +60,7 @@
     "@react-three/fiber": "^8.15.0",
     "howler": "^2.2.4",
     "immer": "^10.1.1",
+    "puppeteer": "^24.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "simplex-noise": "^4.0.3",
