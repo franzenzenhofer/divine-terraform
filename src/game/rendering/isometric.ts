@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TerrainCell, Unit, Building, Position3D } from '../../types/game';
+import { TerrainCell, Unit, Building, Position3D, TerrainType } from '../../types/game';
 
 export interface IsometricConfig {
   tileWidth: number;
@@ -35,9 +35,9 @@ export class IsometricRenderer {
     this.terrain = terrain;
     
     this.config = {
-      tileWidth: 32,
-      tileHeight: 16,
-      heightScale: 8,
+      tileWidth: 32,    // WebPopulous uses 32x16 diamond tiles
+      tileHeight: 16,   // Classic isometric 2:1 ratio
+      heightScale: 8,   // 8 pixels per height unit (from WebPopulous)
       viewportWidth: 800,
       viewportHeight: 600,
       ...config
@@ -111,15 +111,27 @@ export class IsometricRenderer {
     return [clampedX, clampedY];
   }
 
-  // Create isometric tile mesh
+  // Create isometric tile mesh (WebPopulous-style diamond shape)
   private createTileMesh(x: number, y: number, cell: TerrainCell): THREE.Mesh {
-    const geometry = new THREE.PlaneGeometry(this.config.tileWidth, this.config.tileWidth);
+    // Create diamond-shaped geometry for isometric tile
+    const shape = new THREE.Shape();
+    const hw = this.config.tileWidth / 2;  // half width
+    const hh = this.config.tileHeight / 2; // half height
+    
+    // Draw diamond shape (clockwise from top)
+    shape.moveTo(0, -hh);      // Top point
+    shape.lineTo(hw, 0);       // Right point
+    shape.lineTo(0, hh);       // Bottom point
+    shape.lineTo(-hw, 0);      // Left point
+    shape.closePath();
+    
+    const geometry = new THREE.ShapeGeometry(shape);
     
     // Select material based on height and type
     let material: THREE.Material;
-    if (cell.type === 'water') {
+    if (cell.type === TerrainType.WATER || cell.type === TerrainType.SHALLOW_WATER) {
       material = this.materials.get('ocean')!;
-    } else if (cell.type === 'building') {
+    } else if (cell.type === TerrainType.BUILDING) {
       material = this.materials.get('house')!;
     } else {
       // Use different grass textures based on height
@@ -129,13 +141,11 @@ export class IsometricRenderer {
     
     const mesh = new THREE.Mesh(geometry, material);
     
-    // Position in isometric space
+    // Position in isometric space (WebPopulous style)
     const screenPos = this.logicalToScreen(x, y, cell.height);
     mesh.position.set(screenPos.x, screenPos.y, screenPos.z);
     
-    // Rotate to face camera
-    mesh.rotation.x = -Math.PI / 4;
-    mesh.rotation.z = Math.PI / 4;
+    // No rotation needed - diamond is already in correct orientation
     
     return mesh;
   }

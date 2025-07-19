@@ -30,9 +30,9 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({ onTerrainClick }) => {
   useEffect(() => {
     if (!terrain || terrain.length === 0) return;
 
-    // Set up orthographic camera for isometric view
+    // Set up orthographic camera for WebPopulous-style isometric view
     const aspect = gl.domElement.width / gl.domElement.height;
-    const frustumSize = 100;
+    const frustumSize = 50; // Smaller for more zoomed-in view like WebPopulous
     const orthoCam = new THREE.OrthographicCamera(
       -frustumSize * aspect / 2,
       frustumSize * aspect / 2,
@@ -42,7 +42,16 @@ const IsometricScene: React.FC<IsometricSceneProps> = ({ onTerrainClick }) => {
       1000
     );
     
-    orthoCam.position.set(50, 50, 50);
+    // Classic isometric angle: camera at 45° rotation and 30° elevation
+    const distance = 100;
+    const angle = Math.PI / 4; // 45 degrees
+    const elevation = Math.PI / 6; // 30 degrees
+    
+    orthoCam.position.set(
+      distance * Math.cos(angle) * Math.cos(elevation),
+      distance * Math.sin(elevation),
+      distance * Math.sin(angle) * Math.cos(elevation)
+    );
     orthoCam.lookAt(0, 0, 0);
     
     // Replace the perspective camera with orthographic

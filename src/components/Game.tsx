@@ -14,7 +14,7 @@ const Game: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Initializing divine powers...');
-  const [isIsometric, setIsIsometric] = useState(false);
+  const [isIsometric, setIsIsometric] = useState(true); // Default to isometric view
 
   useEffect(() => {
     const loadGame = async () => {
@@ -60,13 +60,15 @@ const Game: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* View Toggle Button */}
+      {/* View Toggle Button - Hidden by default for pure isometric experience */}
+      {/* Uncomment to enable view switching
       <button
         className="absolute top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-lg hover:bg-gray-700 transition-colors"
         onClick={() => setIsIsometric(!isIsometric)}
       >
-        {isIsometric ? '3D View' : 'Isometric View'}
+        {isIsometric ? '3D View' : 'Classic View'}
       </button>
+      */}
       
       {isIsometric ? (
         <IsometricGameWorld />
