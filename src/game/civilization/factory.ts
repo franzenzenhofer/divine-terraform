@@ -5,7 +5,8 @@ interface CivilizationConfig {
   name: string;
   color: string;
   isPlayer: boolean;
-  startPosition: Vector3;
+  startPosition?: Vector3;
+  startingPopulation?: number;
   alignment?: CivilizationAlignment;
 }
 
@@ -24,7 +25,7 @@ export function createCivilization(config: CivilizationConfig): Civilization {
       faith: isPlayer ? 50 : 0,
       knowledge: 0
     },
-    population: 10,
+    population: config.startingPopulation || 10,
     maxPopulation: 20,
     faith: isPlayer ? 50 : 0,
     technology: [],
@@ -79,7 +80,9 @@ export function createUnit(config: UnitConfig): Unit {
     currentAction: null,
     level: 1,
     experience: 0,
-    path: []
+    path: [],
+    speed: 1,
+    attackPower: 5
   };
 }
 

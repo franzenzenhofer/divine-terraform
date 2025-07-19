@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stats } from '@react-three/drei';
 import { useGameStore } from '../stores/gameStore';
 import GameWorld from './GameWorld';
+import IsometricGameWorld from './IsometricGameWorld';
 import HUD from './HUD';
 import LoadingScreen from './LoadingScreen';
 import MainMenu from './MainMenu';
@@ -13,6 +14,7 @@ const Game: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Initializing divine powers...');
+  const [isIsometric, setIsIsometric] = useState(false);
 
   useEffect(() => {
     const loadGame = async () => {
@@ -58,26 +60,38 @@ const Game: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <Canvas
-        camera={{
-          position: [50, 50, 50],
-          fov: 60,
-          near: 0.1,
-          far: 1000
-        }}
-        gl={{
-          antialias: true,
-          alpha: false,
-          powerPreference: 'high-performance',
-          stencil: false
-        }}
-        shadows
+      {/* View Toggle Button */}
+      <button
+        className="absolute top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-lg hover:bg-gray-700 transition-colors"
+        onClick={() => setIsIsometric(!isIsometric)}
       >
-        <Suspense fallback={null}>
-          <GameWorld />
-        </Suspense>
-        {/* {import.meta.env.DEV && <Stats />} */}
-      </Canvas>
+        {isIsometric ? '3D View' : 'Isometric View'}
+      </button>
+      
+      {isIsometric ? (
+        <IsometricGameWorld />
+      ) : (
+        <Canvas
+          camera={{
+            position: [50, 50, 50],
+            fov: 60,
+            near: 0.1,
+            far: 1000
+          }}
+          gl={{
+            antialias: true,
+            alpha: false,
+            powerPreference: 'high-performance',
+            stencil: false
+          }}
+          shadows
+        >
+          <Suspense fallback={null}>
+            <GameWorld />
+          </Suspense>
+          {/* {import.meta.env.DEV && <Stats />} */}
+        </Canvas>
+      )}
       
       <HUD />
     </div>

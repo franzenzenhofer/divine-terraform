@@ -23,6 +23,8 @@ export const useGameStore = create<GameStore>()(
         // Game state
         terrain: [],
         civilizations: [],
+        buildings: [],
+        units: [],
         weather: Weather.CLEAR,
         activeEffects: [],
         mapSize: { x: 128, y: 128 },

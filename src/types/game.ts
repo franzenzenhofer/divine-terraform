@@ -11,6 +11,12 @@ export interface Vector3 {
   z: number;
 }
 
+export interface Position3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface TerrainCell {
   x: number;
   y: number;
@@ -25,6 +31,9 @@ export interface TerrainCell {
   ownerId?: string;
   walkable: boolean;
   buildable: boolean;
+  biome?: string;
+  slope?: number;
+  vegetation?: number;
 }
 
 export enum TerrainType {
@@ -41,6 +50,8 @@ export enum TerrainType {
   TUNDRA = 'tundra',
   SWAMP = 'swamp',
   VOLCANIC = 'volcanic',
+  LAND = 'land',
+  BUILDING = 'building',
 }
 
 export interface Building {
@@ -109,6 +120,8 @@ export interface Unit {
   experience: number;
   carryingResource?: ResourceType;
   carryingAmount?: number;
+  speed: number;
+  attackPower: number;
 }
 
 export enum UnitType {
@@ -123,6 +136,7 @@ export enum UnitType {
   SCOUT = 'scout',
   MERCHANT = 'merchant',
   HERO = 'hero',
+  WALKER = 'walker',
 }
 
 export enum UnitState {
@@ -146,6 +160,7 @@ export interface Civilization {
   name: string;
   color: string | number;
   isPlayer: boolean;
+  centerPosition?: Position3D;
   resources: Resources;
   population: number;
   maxPopulation: number;
@@ -265,6 +280,8 @@ export interface GameState {
   // Core state
   terrain: TerrainCell[][];
   civilizations: Civilization[];
+  buildings: Building[];
+  units: Unit[];
   weather: Weather;
   activeEffects: Effect[];
   
