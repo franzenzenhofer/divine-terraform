@@ -79,6 +79,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress = 0, message = '
         
         <h1 className="loading-title">Divine Terraform</h1>
         <p className="loading-subtitle">Shape Worlds • Guide Civilizations</p>
+        <p className="loading-version">v1.2.0</p>
         
         <div className="loading-progress-container">
           <div className="loading-progress-bar">
@@ -146,7 +147,14 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress = 0, message = '
         .loading-subtitle {
           font-size: 1.1rem;
           color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 3rem;
+          margin-bottom: 0.5rem;
+        }
+        
+        .loading-version {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.5);
+          margin-bottom: 2.5rem;
+          font-family: monospace;
         }
         
         .loading-progress-container {
