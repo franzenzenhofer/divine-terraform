@@ -23,7 +23,7 @@ async function captureScreenshots() {
     
     // Wait for loading screen to disappear
     try {
-      await page.waitForSelector('.loading-screen', { state: 'hidden', timeout: 15000 });
+      await page.waitForSelector('.loading-screen', { hidden: true, timeout: 15000 });
     } catch (e) {
       console.log('Loading screen timeout, continuing...');
     }
@@ -53,7 +53,7 @@ async function captureScreenshots() {
     }
     
     // Wait for view to switch
-    await page.waitForTimeout(3000);
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
     // Take screenshot of isometric view
     console.log('Taking isometric view screenshot...');

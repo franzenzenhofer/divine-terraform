@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stats } from '@react-three/drei';
 import { useGameStore } from '../stores/gameStore';
 import GameWorld from './GameWorld';
-import IsometricGameWorld from './IsometricGameWorld';
+import { PopulousIsometric } from '../game/rendering/PopulousIsometric';
 import HUD from './HUD';
 import LoadingScreen from './LoadingScreen';
 import MainMenu from './MainMenu';
@@ -14,7 +14,16 @@ const Game: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Initializing divine powers...');
-  const [isIsometric, setIsIsometric] = useState(true); // Default to isometric view
+  const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
+  
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const loadGame = async () => {
@@ -60,40 +69,8 @@ const Game: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* View Toggle Button - Hidden by default for pure isometric experience */}
-      {/* Uncomment to enable view switching
-      <button
-        className="absolute top-4 right-4 z-50 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-lg hover:bg-gray-700 transition-colors"
-        onClick={() => setIsIsometric(!isIsometric)}
-      >
-        {isIsometric ? '3D View' : 'Classic View'}
-      </button>
-      */}
-      
-      {isIsometric ? (
-        <IsometricGameWorld />
-      ) : (
-        <Canvas
-          camera={{
-            position: [50, 50, 50],
-            fov: 60,
-            near: 0.1,
-            far: 1000
-          }}
-          gl={{
-            antialias: true,
-            alpha: false,
-            powerPreference: 'high-performance',
-            stencil: false
-          }}
-          shadows
-        >
-          <Suspense fallback={null}>
-            <GameWorld />
-          </Suspense>
-          {/* {import.meta.env.DEV && <Stats />} */}
-        </Canvas>
-      )}
+      {/* PURE POPULOUS-STYLE ISOMETRIC VIEW ONLY! */}
+      <PopulousIsometric width={dimensions.width} height={dimensions.height} />
       
       <HUD />
     </div>
