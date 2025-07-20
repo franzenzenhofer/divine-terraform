@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../stores/gameStore';
+import { TerrainType, GodPowerType } from '../../types/game';
 
 interface Props {
   width: number;
@@ -16,18 +17,23 @@ function calcPos(x: number, y: number, height: number, canvasWidth: number, canv
 
 // Convert screen coordinates to logical tile coordinates
 function screenToLogical(screenX: number, screenY: number, canvasWidth: number, canvasHeight: number): [number, number] {
-  const x = screenX - canvasWidth / 2;
-  const y = screenY - (canvasHeight - 16 * 20 - 16);
+  // Adjust for the isometric offset (matching calcPos function)
+  const offsetX = screenX - canvasWidth / 2;
+  const offsetY = screenY - 100; // Starting Y offset from calcPos
   
-  return [
-    Math.floor((x / 2 + y) / 16),
-    Math.floor((y - x / 2) / 16)
-  ];
+  // Inverse of the isometric transformation
+  // Original: screenX = x * 16 - y * 16
+  // Original: screenY = x * 8 + y * 8
+  // Solving for x and y:
+  const x = (offsetX / 16 + offsetY / 8) / 2;
+  const y = (offsetY / 8 - offsetX / 16) / 2;
+  
+  return [Math.floor(x), Math.floor(y)];
 }
 
 export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { terrain, units, buildings } = useGameStore();
+  const { terrain, units, buildings, modifyTerrain, selectedPower, usePower, faith } = useGameStore();
   const [viewportOrigin, setViewportOrigin] = useState([0, 0]);
   const viewportWidth = Math.floor(width / 32) + 10;  // Dynamic viewport based on screen size
   const viewportHeight = Math.floor(height / 16) + 10;
@@ -93,7 +99,7 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
           const slopeId = getSlopeId(worldX, worldY);
           let color = terrainColors.land;
           
-          if (cell.type === 'water' || cell.height === 0) {
+          if (cell.type === TerrainType.WATER || cell.height === 0) {
             color = terrainColors.ocean;
           } else if (slopeId !== 0) {
             // Use slope-based coloring
@@ -189,7 +195,7 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
         const px = minimapX + (x / terrain.length) * minimapSize;
         const py = minimapY + (y / terrain[0].length) * minimapSize;
         
-        ctx.fillStyle = cell.type === 'water' ? terrainColors.ocean : 
+        ctx.fillStyle = cell.type === TerrainType.WATER ? terrainColors.ocean : 
                        cell.height > 5 ? '#00FF00' :
                        cell.height > 2 ? '#00AA00' : '#007700';
         ctx.fillRect(px, py, Math.ceil(minimapSize / terrain.length), Math.ceil(minimapSize / terrain[0].length));
@@ -208,13 +214,22 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
     
   }, [terrain, units, buildings, viewportOrigin, width, height]);
   
-  // Handle mouse events for panning
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // Handle mouse/touch events
+  const handleInteraction = (e: React.MouseEvent | React.TouchEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (!rect || !terrain) return;
     
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    let x: number, y: number;
+    if ('touches' in e) {
+      // Touch event
+      if (e.touches.length === 0) return;
+      x = e.touches[0].clientX - rect.left;
+      y = e.touches[0].clientY - rect.top;
+    } else {
+      // Mouse event
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
+    }
     
     // Check if clicking on minimap
     if (x >= 20 && x <= 120 && y >= 20 && y <= 120) {
@@ -227,6 +242,38 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
         Math.max(0, Math.min(terrain.length - viewportWidth, newX)),
         Math.max(0, Math.min(terrain[0].length - viewportHeight, newY))
       ]);
+    } else {
+      // Handle terrain modification
+      const [logicalX, logicalY] = screenToLogical(x, y, width, height);
+      const worldX = logicalX + viewportOrigin[0];
+      const worldY = logicalY + viewportOrigin[1];
+      
+      console.log('Click at screen:', x, y, '-> logical:', logicalX, logicalY, '-> world:', worldX, worldY);
+      
+      if (worldX >= 0 && worldX < terrain.length && worldY >= 0 && worldY < terrain[0].length) {
+        const currentCell = terrain[worldX][worldY];
+        const isRightClick = 'button' in e && e.button === 2;
+        
+        // Handle based on selected power or default terrain modification
+        if (selectedPower) {
+          console.log('Using power:', selectedPower, 'at', worldX, worldY);
+          // Use the store's usePower method which handles faith costs
+          usePower(selectedPower, { x: worldX, y: worldY });
+        } else {
+          // Default terrain modification only if we have faith for basic terraforming
+          if (faith >= 5) { // Basic terraforming costs 5 faith
+            const delta = isRightClick ? -1 : 1;
+            const newHeight = Math.max(0, Math.min(50, currentCell.height + delta));
+            console.log('Modifying terrain at', worldX, worldY, 'from height', currentCell.height, 'to', newHeight);
+            // Should use a basic terraform power through usePower, but for now modify directly
+            modifyTerrain(worldX, worldY, { height: newHeight });
+          } else {
+            console.log('Not enough faith for terraforming');
+          }
+        }
+      } else {
+        console.log('Click outside terrain bounds');
+      }
     }
   };
   
@@ -241,9 +288,15 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
         top: 0,
         left: 0,
         width: '100%',
-        height: '100%'
+        height: '100%',
+        touchAction: 'none' // Prevent default touch behaviors
       }}
-      onMouseDown={handleMouseDown}
+      onMouseDown={handleInteraction}
+      onTouchStart={(e) => {
+        e.preventDefault(); // Prevent default touch behavior
+        handleInteraction(e);
+      }}
+      onContextMenu={(e) => e.preventDefault()}
     />
   );
 };

@@ -26,7 +26,7 @@ const powers = [
 
 const PowerSelector: React.FC<PowerSelectorProps> = ({ selectedPower, onSelectPower, faith }) => {
   return (
-    <div className="bg-black/50 backdrop-blur-md rounded-t-2xl p-4">
+    <div className="bg-black/50 backdrop-blur-md rounded-t-2xl p-4" style={{ position: 'relative', zIndex: 30 }}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-white font-bold">Divine Powers</h3>
         <div className="text-yellow-400 font-bold">

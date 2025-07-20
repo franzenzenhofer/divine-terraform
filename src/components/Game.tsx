@@ -3,8 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stats } from '@react-three/drei';
 import { useGameStore } from '../stores/gameStore';
 import GameWorld from './GameWorld';
-import { PopulousIsometric } from '../game/rendering/PopulousIsometric';
-import HUD from './HUD';
+import GameContainer from './GameContainer';
 import LoadingScreen from './LoadingScreen';
 import MainMenu from './MainMenu';
 import { GamePhase, Difficulty } from '../types/game';
@@ -67,14 +66,7 @@ const Game: React.FC = () => {
     return <MainMenu />;
   }
 
-  return (
-    <div className="relative w-full h-screen overflow-hidden">
-      {/* PURE POPULOUS-STYLE ISOMETRIC VIEW ONLY! */}
-      <PopulousIsometric width={dimensions.width} height={dimensions.height} />
-      
-      <HUD />
-    </div>
-  );
+  return <GameContainer />;
 };
 
 export default Game;

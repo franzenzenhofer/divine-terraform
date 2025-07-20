@@ -21,19 +21,21 @@ const HUD: React.FC = () => {
   const totalPopulation = civilizations.reduce((sum, civ) => sum + civ.population, 0);
 
   return (
-    <>
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 10 }}>
       {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 p-4 pointer-events-none" style={{ zIndex: 20 }}>
         <div className="flex justify-between items-start">
           {/* Resources */}
-          <ResourceDisplay />
+          <div className="pointer-events-auto">
+            <ResourceDisplay />
+          </div>
           
           {/* Time Controls */}
           <div className="bg-black/50 backdrop-blur-md rounded-lg p-3 pointer-events-auto">
             <div className="flex items-center gap-3 text-white">
               <button
                 onClick={togglePause}
-                className="p-2 hover:bg-white/20 rounded transition-colors"
+                className="min-w-[44px] min-h-[44px] p-3 hover:bg-white/20 rounded transition-colors text-xl"
                 title={speed === 0 ? "Play" : "Pause"}
               >
                 {speed === 0 ? '▶️' : '⏸️'}
@@ -44,7 +46,7 @@ const HUD: React.FC = () => {
                   <button
                     key={s}
                     onClick={() => setSpeed(s)}
-                    className={`px-2 py-1 rounded transition-colors ${
+                    className={`min-w-[44px] min-h-[44px] px-3 py-2 rounded transition-colors ${
                       speed === s ? 'bg-white/30' : 'hover:bg-white/20'
                     }`}
                   >
@@ -66,7 +68,7 @@ const HUD: React.FC = () => {
           <div className="pointer-events-auto">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="bg-black/50 backdrop-blur-md rounded-lg p-3 text-white hover:bg-black/60 transition-colors"
+              className="min-w-[44px] min-h-[44px] bg-black/50 backdrop-blur-md rounded-lg p-3 text-white hover:bg-black/60 transition-colors text-xl"
             >
               ☰
             </button>
@@ -75,7 +77,7 @@ const HUD: React.FC = () => {
       </div>
       
       {/* Bottom UI */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
+      <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none" style={{ zIndex: 20 }}>
         <div className="flex justify-between items-end">
           {/* MiniMap */}
           <div className="pointer-events-auto">
@@ -118,7 +120,7 @@ const HUD: React.FC = () => {
       
       {/* Side Menu */}
       {showMenu && (
-        <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 text-white">
+        <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 text-white" style={{ zIndex: 30 }}>
           <h3 className="text-lg font-bold mb-3">Menu</h3>
           <div className="space-y-2">
             <button className="block w-full text-left p-2 hover:bg-white/20 rounded transition-colors">
@@ -142,7 +144,7 @@ const HUD: React.FC = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

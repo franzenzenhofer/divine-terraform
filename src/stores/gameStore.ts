@@ -69,7 +69,9 @@ export const useGameStore = create<GameStore>()(
         initializeGame: async (config: GameConfig) => {
           set((state) => {
             // Generate terrain
-            state.terrain = generateTerrain(config.mapSize, { seed: config.seed });
+            const generatedTerrain = generateTerrain(config.mapSize, { seed: config.seed });
+            console.log('Generated terrain:', generatedTerrain.length, 'x', generatedTerrain[0]?.length);
+            state.terrain = generatedTerrain;
             state.mapSize = config.mapSize;
             state.difficulty = config.difficulty;
             
@@ -84,6 +86,26 @@ export const useGameStore = create<GameStore>()(
             
             state.civilizations = [playerCiv];
             state.phase = GamePhase.PLAYING;
+            
+            // Initialize some buildings for the player civilization
+            const centerX = Math.floor(config.mapSize.x / 2);
+            const centerY = Math.floor(config.mapSize.y / 2);
+            state.buildings = [
+              {
+                id: 'temple_1',
+                type: 'temple' as BuildingType,
+                position: { x: centerX, y: 0, z: centerY },
+                civilizationId: 'player',
+                level: 1,
+                health: 100,
+                maxHealth: 100,
+                constructionProgress: 100,
+                isActive: true,
+                isCompleted: true,
+                workforce: 2,
+                maxWorkforce: 2
+              }
+            ];
           });
         },
 
@@ -173,6 +195,11 @@ export const useGameStore = create<GameStore>()(
     )
   )
 );
+
+// Expose store to window for debugging
+if (typeof window !== 'undefined') {
+  (window as any).__zustand_game_store = useGameStore;
+}
 
 function getPowerCost(power: GodPowerType): number {
   const costs: Record<GodPowerType, number> = {
