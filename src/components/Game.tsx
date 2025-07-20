@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { Stats } from '@react-three/drei';
 import { useGameStore } from '../stores/gameStore';
 import GameWorld from './GameWorld';
-import GameContainer from './GameContainer';
+import GameWithUI from './GameWithUI';
 import LoadingScreen from './LoadingScreen';
 import MainMenu from './MainMenu';
 import { GamePhase, Difficulty } from '../types/game';
@@ -66,7 +66,7 @@ const Game: React.FC = () => {
     return <MainMenu />;
   }
 
-  return <GameContainer />;
+  return <GameWithUI width={dimensions.width} height={dimensions.height} />;
 };
 
 export default Game;

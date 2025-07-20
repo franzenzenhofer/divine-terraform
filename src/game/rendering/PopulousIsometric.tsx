@@ -180,37 +180,7 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
       }
     });
     
-    // Draw minimap
-    const minimapSize = 100;
-    const minimapX = 20;
-    const minimapY = 20;
-    
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(minimapX - 2, minimapY - 2, minimapSize + 4, minimapSize + 4);
-    
-    // Draw minimap terrain
-    for (let y = 0; y < terrain[0].length; y++) {
-      for (let x = 0; x < terrain.length; x++) {
-        const cell = terrain[x][y];
-        const px = minimapX + (x / terrain.length) * minimapSize;
-        const py = minimapY + (y / terrain[0].length) * minimapSize;
-        
-        ctx.fillStyle = cell.type === TerrainType.WATER ? terrainColors.ocean : 
-                       cell.height > 5 ? '#00FF00' :
-                       cell.height > 2 ? '#00AA00' : '#007700';
-        ctx.fillRect(px, py, Math.ceil(minimapSize / terrain.length), Math.ceil(minimapSize / terrain[0].length));
-      }
-    }
-    
-    // Draw viewport indicator on minimap
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      minimapX + (viewportOrigin[0] / terrain.length) * minimapSize,
-      minimapY + (viewportOrigin[1] / terrain[0].length) * minimapSize,
-      (viewportWidth / terrain.length) * minimapSize,
-      (viewportHeight / terrain[0].length) * minimapSize
-    );
+    // Minimap is now rendered as a separate component in HUD
     
   }, [terrain, units, buildings, viewportOrigin, width, height]);
   
@@ -231,22 +201,10 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
       y = e.clientY - rect.top;
     }
     
-    // Check if clicking on minimap
-    if (x >= 20 && x <= 120 && y >= 20 && y <= 120) {
-      const minimapX = x - 20;
-      const minimapY = y - 20;
-      const newX = Math.floor((minimapX / 100) * terrain.length - viewportWidth / 2);
-      const newY = Math.floor((minimapY / 100) * terrain[0].length - viewportHeight / 2);
-      
-      setViewportOrigin([
-        Math.max(0, Math.min(terrain.length - viewportWidth, newX)),
-        Math.max(0, Math.min(terrain[0].length - viewportHeight, newY))
-      ]);
-    } else {
-      // Handle terrain modification
-      const [logicalX, logicalY] = screenToLogical(x, y, width, height);
-      const worldX = logicalX + viewportOrigin[0];
-      const worldY = logicalY + viewportOrigin[1];
+    // Handle terrain modification
+    const [logicalX, logicalY] = screenToLogical(x, y, width, height);
+    const worldX = logicalX + viewportOrigin[0];
+    const worldY = logicalY + viewportOrigin[1];
       
       console.log('Click at screen:', x, y, '-> logical:', logicalX, logicalY, '-> world:', worldX, worldY);
       
@@ -274,7 +232,6 @@ export const PopulousIsometric: React.FC<Props> = ({ width, height }) => {
       } else {
         console.log('Click outside terrain bounds');
       }
-    }
   };
   
   return (

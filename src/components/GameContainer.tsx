@@ -62,13 +62,13 @@ const GameContainer: React.FC = () => {
       onMouseDown={handleCanvasClick}
       onTouchStart={handleCanvasClick}
     >
-      {/* Canvas Layer - pointer-events only for canvas area */}
+      {/* Canvas Layer - receives events */}
       <div className="absolute inset-0 z-0">
         <PopulousIsometric width={dimensions.width} height={dimensions.height} />
       </div>
       
-      {/* HUD Layer - above canvas with proper pointer events */}
-      <div className="absolute inset-0 pointer-events-none z-10">
+      {/* HUD Layer - above canvas, UI elements have pointer-events-auto */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1000 }}>
         <HUD />
       </div>
     </div>

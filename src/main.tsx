@@ -13,6 +13,8 @@ if ('performance' in window) {
 }
 
 // Register service worker for PWA
+// Temporarily disabled to debug auth issue
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
@@ -21,6 +23,7 @@ if ('serviceWorker' in navigator) {
       .catch((error) => console.error('SW registration failed:', error));
   });
 }
+*/
 
 // Remove loading screen after React mounts
 const removeLoadingScreen = (): void => {
@@ -42,6 +45,9 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Remove loading screen after mount
+setTimeout(removeLoadingScreen, 100);
 
 // Update loading progress (will be called by asset loader)
 (window as any).updateLoadingProgress = (progress: number): void => {

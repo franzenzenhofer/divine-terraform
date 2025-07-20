@@ -1,0 +1,33 @@
+/* Ensure canvas doesn't block UI */
+.game-canvas-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.game-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Canvas can receive events but UI elements have higher z-index */
+}
+
+/* Ensure all UI elements are above canvas and clickable */
+.ui-layer {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ui-layer button,
+.ui-layer .clickable,
+.ui-layer .pointer-events-auto {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 100;
+}

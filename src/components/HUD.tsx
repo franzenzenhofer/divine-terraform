@@ -21,9 +21,9 @@ const HUD: React.FC = () => {
   const totalPopulation = civilizations.reduce((sum, civ) => sum + civ.population, 0);
 
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 10 }}>
+    <>
       {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 p-4 pointer-events-none" style={{ zIndex: 20 }}>
+      <div className="absolute top-0 left-0 right-0 p-4" style={{ zIndex: 1001 }}>
         <div className="flex justify-between items-start">
           {/* Resources */}
           <div className="pointer-events-auto">
@@ -77,7 +77,7 @@ const HUD: React.FC = () => {
       </div>
       
       {/* Bottom UI */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none" style={{ zIndex: 20 }}>
+      <div className="absolute bottom-0 left-0 right-0 p-4" style={{ zIndex: 1001 }}>
         <div className="flex justify-between items-end">
           {/* MiniMap */}
           <div className="pointer-events-auto">
@@ -120,7 +120,7 @@ const HUD: React.FC = () => {
       
       {/* Side Menu */}
       {showMenu && (
-        <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 text-white" style={{ zIndex: 30 }}>
+        <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-md rounded-lg p-4 text-white pointer-events-auto" style={{ zIndex: 1002 }}>
           <h3 className="text-lg font-bold mb-3">Menu</h3>
           <div className="space-y-2">
             <button className="block w-full text-left p-2 hover:bg-white/20 rounded transition-colors">
@@ -144,7 +144,7 @@ const HUD: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
